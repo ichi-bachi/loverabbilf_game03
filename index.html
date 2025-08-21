@@ -85,38 +85,20 @@ function safeDrawImage(img,x,y,w,h,color="#f0f"){
 
 // リサイズ＆スケーリング
 function resizeCanvas(){
-  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-  // 表示サイズ（CSSピクセル基準）
-  const displayWidth  = window.innerWidth;
-  const displayHeight = window.innerHeight;
+  playerSize = Math.min(canvas.width, canvas.height) * 0.15;
+  moveStep   = Math.min(canvas.width, canvas.height) * 0.07;
 
-  // 内部解像度（実ピクセル）
-  canvas.width  = displayWidth * dpr;
-  canvas.height = displayHeight * dpr;
+  playerX = canvas.width * 0.2;
+  playerY = canvas.height / 2;
 
-  // 見た目のサイズ
-  canvas.style.width  = displayWidth + "px";
-  canvas.style.height = displayHeight + "px";
-
-  // スケールリセット → dpr反映
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.scale(dpr, dpr);
-
-  // プレイヤーサイズ・移動量は CSSピクセル基準
-  playerSize = Math.min(displayWidth, displayHeight) * 0.15;
-  moveStep   = Math.min(displayWidth, displayHeight) * 0.07;
-
-  // プレイヤー初期位置（画面の左寄り・中央高さ）
-  playerX = displayWidth * 0.2;
-  playerY = displayHeight / 2;
-
-  // 敵のサイズ調整（プレイヤーより小さめ）
   enemySize = playerSize * 0.8;
-  
+
   // 移動後に画面外に出ないよう制限
-  playerX = Math.max(0, Math.min(playerX, window.innerWidth - playerSize));
-  playerY = Math.max(0, Math.min(playerY, window.innerHeight - playerSize));
+  playerX = Math.max(0, Math.min(playerX, canvas.width - playerSize));
+  playerY = Math.max(0, Math.min(playerY, canvas.height - playerSize));
 }
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
