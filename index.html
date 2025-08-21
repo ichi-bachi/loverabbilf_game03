@@ -83,18 +83,24 @@ function safeDrawImage(img,x,y,w,h,color="#f0f"){
 }
 
 // リサイズ＆スケーリング
+let playerSize, moveStep, playerX, playerY;
+
 function resizeCanvas(){
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  playerSize = canvas.height * 0.20;
-  moveStep = canvas.height * 0.08;
-  // 初期位置もここで中央寄りに設定
-  playerX = canvas.width * 0.2;
-  playerY = canvas.height/2;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+  canvas.style.width = window.innerWidth + "px";
+  canvas.style.height = window.innerHeight + "px";
+  ctx.setTransform(1, 0, 0, 1, 0, 0); // リセット
+  ctx.scale(dpr, dpr);
+
+  playerSize = Math.min(window.innerWidth, window.innerHeight) * 0.2;
+  moveStep   = Math.min(window.innerWidth, window.innerHeight) * 0.08;
+
+  playerX = window.innerWidth * 0.2;
+  playerY = window.innerHeight / 2;
 }
-window.addEventListener("resize", ()=>{
-  resizeCanvas();
-});
+window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
 // ゲームリセット
@@ -206,16 +212,20 @@ window.addEventListener("keydown", e=>{
 });
 
 // スマホ操作
-canvas.addEventListener("touchstart", e=>{
+canvas.addEventListener("touchstart", e => {
   const touch = e.touches[0];
-  if(touch.clientX < window.innerWidth/2){
-    if(touch.clientY < window.innerHeight/2) playerY -= moveStep;
-    else playerY += moveStep;
+  const x = touch.clientX;
+  const y = touch.clientY;
+
+  if(y < window.innerHeight / 2 && Math.abs(y - playerY) > Math.abs(x - playerX)){
+    playerY -= moveStep; // 上
+  } else if(y >= window.innerHeight / 2 && Math.abs(y - playerY) > Math.abs(x - playerX)){
+    playerY += moveStep; // 下
+  } else if(x < window.innerWidth / 2){
+    playerX -= moveStep; // 左
   } else {
-    if(touch.clientY < window.innerHeight/2) playerX += moveStep;
-    else playerX -= moveStep;
+    playerX += moveStep; // 右
   }
-  clampPlayerPosition();
 });
 
 // ボタン
