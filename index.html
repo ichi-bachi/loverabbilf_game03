@@ -101,7 +101,7 @@ resizeCanvas();
 // 横画面チェック
 function checkOrientation(){
   const notice = document.getElementById("rotateNotice");
-  if(window.innerHeight > window.innerWidth){ notice.style.display="flex"; } 
+  if(window.innerWidth / window.innerHeight < 1.1){ notice.style.display="flex"; } 
   else { notice.style.display="none"; }
 }
 checkOrientation();
