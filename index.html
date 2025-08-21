@@ -49,8 +49,8 @@ const bgm = document.getElementById("bgm");
 let playerX, playerY;
 let playerFrame = 0;
 let playerTimer = 0;
-let playerSize;
-let moveStep;
+let playerSize = Math.min(canvas.width, canvas.height) * 0.1; // 画面に対して10%
+let moveStep   = Math.min(canvas.width, canvas.height) * 0.05;
 
 // 背景
 const bgImgs = ["haikei1.png","haikei2.png","haikei3.png"].map(src=>{ let img=new Image(); img.src=src; return img; });
@@ -94,17 +94,8 @@ function resizeCanvas(){
 }
 window.addEventListener("resize", ()=>{
   resizeCanvas();
-  checkOrientation();
 });
 resizeCanvas();
-
-// 横画面チェック
-function checkOrientation(){
-  const notice = document.getElementById("rotateNotice");
-  if(window.innerWidth / window.innerHeight < 1.1){ notice.style.display="flex"; } 
-  else { notice.style.display="none"; }
-}
-checkOrientation();
 
 // ゲームリセット
 function resetGame(){
