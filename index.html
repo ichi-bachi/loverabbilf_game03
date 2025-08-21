@@ -93,11 +93,13 @@ function resizeCanvas(){
   ctx.setTransform(1, 0, 0, 1, 0, 0); // リセット
   ctx.scale(dpr, dpr);
 
-  playerSize = Math.min(window.innerWidth, window.innerHeight) * 0.2;
-  moveStep   = Math.min(window.innerWidth, window.innerHeight) * 0.08;
+   // プレイヤーサイズ・移動量は CSSピクセルで決定
+  playerSize = Math.min(displayWidth, displayHeight) * 0.15;
+  moveStep   = Math.min(displayWidth, displayHeight) * 0.07;
 
-  playerX = window.innerWidth * 0.2;
-  playerY = window.innerHeight / 2;
+  // 初期位置（CSS基準！）
+  playerX = displayWidth * 0.2;
+  playerY = displayHeight / 2;
 }window.addEventListener("resize", ()=>{
   resizeCanvas();
 });
