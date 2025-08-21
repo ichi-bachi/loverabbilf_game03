@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>とことこらびるふ</title>
+<title>とことこっらびるふ</title>
 <style>
   body { margin:0; overflow:hidden; font-family:sans-serif; background:#87ceeb;}
   canvas { display:block; }
@@ -29,7 +29,7 @@
 <div id="ui">SCORE: <span id="score">0</span></div>
 <button id="pauseBtn">PAUSE</button>
 <div id="startScreen">
-  <h1>とことこらびるふ</h1>
+  <h1>とことこっらびるふ</h1>
   <p>らびるふを操作して障害物をよけながら進もう！<br>
      PC: ↑↓←→ / W/A/S/D で移動<br>
      スマホ: 画面の上下左右タップで移動（横画面推奨）</p>
@@ -40,6 +40,7 @@
   <p id="hiscoreText">HI SCORE: 0</p>
   <button id="retryBtn">RETRY</button>
 </div>
+<div id="rotateNotice">横画面でプレイしてください</div>
 
 <script>
 const canvas = document.getElementById("gameCanvas");
@@ -49,8 +50,8 @@ const bgm = document.getElementById("bgm");
 let playerX, playerY;
 let playerFrame = 0;
 let playerTimer = 0;
-let playerSize = Math.min(canvas.width, canvas.height) * 0.1; // 画面に対して10%
-let moveStep   = Math.min(canvas.width, canvas.height) * 0.05;
+let playerSize;
+let moveStep;
 
 // 背景
 const bgImgs = ["haikei1.png","haikei2.png","haikei3.png"].map(src=>{ let img=new Image(); img.src=src; return img; });
@@ -83,36 +84,25 @@ function safeDrawImage(img,x,y,w,h,color="#f0f"){
 }
 
 // リサイズ＆スケーリング
-let playerSize, moveStep, playerX, playerY;
-
 function resizeCanvas(){
   const dpr = window.devicePixelRatio || 1;
-
-  // 論理サイズ（CSSピクセル）
-  const displayWidth  = window.innerWidth;
-  const displayHeight = window.innerHeight;
-
-  // 実ピクセルサイズ
-  canvas.width  = displayWidth * dpr;
-  canvas.height = displayHeight * dpr;
-
-  // CSSで見た目のサイズは変えない
-  canvas.style.width  = displayWidth + "px";
-  canvas.style.height = displayHeight + "px";
-
-  // スケーリング設定
-  ctx.setTransform(1, 0, 0, 1, 0, 0); // まずリセット
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+  canvas.style.width = window.innerWidth + "px";
+  canvas.style.height = window.innerHeight + "px";
+  ctx.setTransform(1, 0, 0, 1, 0, 0); // リセット
   ctx.scale(dpr, dpr);
 
-  // キャラサイズはCSSピクセル基準で決める
-  playerSize = Math.min(displayWidth, displayHeight) * 0.2;
-  moveStep   = Math.min(displayWidth, displayHeight) * 0.08;
+  playerSize = Math.min(window.innerWidth, window.innerHeight) * 0.2;
+  moveStep   = Math.min(window.innerWidth, window.innerHeight) * 0.08;
 
-  playerX = displayWidth * 0.2;
-  playerY = displayHeight / 2;
-}
-window.addEventListener("resize", resizeCanvas);
+  playerX = window.innerWidth * 0.2;
+  playerY = window.innerHeight / 2;
+}window.addEventListener("resize", ()=>{
+  resizeCanvas();
+});
 resizeCanvas();
+
 
 // ゲームリセット
 function resetGame(){
@@ -244,7 +234,6 @@ canvas.addEventListener("touchstart", e => {
     else       playerY += moveStep;
   }
 });
-
 // ボタン
 document.getElementById("startBtn").onclick = ()=>{
   resetGame();
