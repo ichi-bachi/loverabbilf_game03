@@ -87,18 +87,29 @@ let playerSize, moveStep, playerX, playerY;
 
 function resizeCanvas(){
   const dpr = window.devicePixelRatio || 1;
-  canvas.width = window.innerWidth * dpr;
-  canvas.height = window.innerHeight * dpr;
-  canvas.style.width = window.innerWidth + "px";
-  canvas.style.height = window.innerHeight + "px";
-  ctx.setTransform(1, 0, 0, 1, 0, 0); // リセット
+
+  // 論理サイズ（CSSピクセル）
+  const displayWidth  = window.innerWidth;
+  const displayHeight = window.innerHeight;
+
+  // 実ピクセルサイズ
+  canvas.width  = displayWidth * dpr;
+  canvas.height = displayHeight * dpr;
+
+  // CSSで見た目のサイズは変えない
+  canvas.style.width  = displayWidth + "px";
+  canvas.style.height = displayHeight + "px";
+
+  // スケーリング設定
+  ctx.setTransform(1, 0, 0, 1, 0, 0); // まずリセット
   ctx.scale(dpr, dpr);
 
-  playerSize = Math.min(window.innerWidth, window.innerHeight) * 0.2;
-  moveStep   = Math.min(window.innerWidth, window.innerHeight) * 0.08;
+  // キャラサイズはCSSピクセル基準で決める
+  playerSize = Math.min(displayWidth, displayHeight) * 0.2;
+  moveStep   = Math.min(displayWidth, displayHeight) * 0.08;
 
-  playerX = window.innerWidth * 0.2;
-  playerY = window.innerHeight / 2;
+  playerX = displayWidth * 0.2;
+  playerY = displayHeight / 2;
 }
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
@@ -217,14 +228,20 @@ canvas.addEventListener("touchstart", e => {
   const x = touch.clientX;
   const y = touch.clientY;
 
-  if(y < window.innerHeight / 2 && Math.abs(y - playerY) > Math.abs(x - playerX)){
-    playerY -= moveStep; // 上
-  } else if(y >= window.innerHeight / 2 && Math.abs(y - playerY) > Math.abs(x - playerX)){
-    playerY += moveStep; // 下
-  } else if(x < window.innerWidth / 2){
-    playerX -= moveStep; // 左
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
+
+  const dx = x - centerX;
+  const dy = y - centerY;
+
+  if(Math.abs(dx) > Math.abs(dy)){
+    // 横方向が強い → 左右
+    if(dx < 0) playerX -= moveStep;
+    else       playerX += moveStep;
   } else {
-    playerX += moveStep; // 右
+    // 縦方向が強い → 上下
+    if(dy < 0) playerY -= moveStep;
+    else       playerY += moveStep;
   }
 });
 
